@@ -1,20 +1,37 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import React from 'react';
+import {createStackNavigator} from "@react-navigation/stack";
+import {Provider} from "react-redux";
+import {NavigationContainer} from "@react-navigation/native";
+import store from "./src/core/redux/store";
+import HomeScreen from "./src/static/HomeScreen";
+import ChatScreen from "./src/static/ChatScreen";
+import {SafeAreaView} from "react-native";
 
-export default function App() {
-  return (
-    <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
-  );
-}
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+const Stack = createStackNavigator<RootStackParamList>();
+
+export type RootStackParamList = {
+    Home: undefined;
+    Chat: { chatId: number, title: string };
+};
+
+const App = () => {
+    return (
+        <Provider store={store}>
+            <SafeAreaView style={{flex: 1}}>
+                <NavigationContainer>
+                    <Stack.Navigator initialRouteName="Home">
+                        <Stack.Screen name="Home" component={HomeScreen}
+                                      options={{title: "All chats"}}/>
+                        <Stack.Screen name="Chat" component={ChatScreen}
+                                      options={(route) =>
+                                          ({title: route.route.params.title})}
+                        />
+                    </Stack.Navigator>
+                </NavigationContainer>
+            </SafeAreaView>
+        </Provider>
+    );
+};
+
+export default App;
